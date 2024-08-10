@@ -14,6 +14,7 @@ RUN apt-get update && \
         tmux \
         python3-pip && \
     rm -rf /var/lib/apt/lists/*
+RUN echo "shopt -s extglob" >> ~/.bashrc
 ENV CONDA_DIR=/opt/conda
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b -p /opt/conda
@@ -34,17 +35,9 @@ RUN useradd \
 ARG WORKDIR_PATH
 WORKDIR ${WORKDIR_PATH}
 
-# Copy the environment YAML file into the container
 COPY environment.yaml .
-
-# Create the conda environment
 RUN conda env create -f environment.yaml
-
-# Activate the environment (you can use this command later in the container)
 SHELL ["conda", "run", "-n", "eicl_venv", "/bin/bash", "-c"]
-
-
-
 
 ARG JAX_CUDA_CUDNN="cuda"
 RUN python3 -m pip install --upgrade pip && \
